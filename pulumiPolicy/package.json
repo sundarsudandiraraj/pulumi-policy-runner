@@ -1,0 +1,31 @@
+{
+    "name": "aws-lottiefiles-iso27001-compliance-ready-policies-sundar",
+    "version": "0.0.2",
+    "description": "AWS compliance policy pack for LottieFiles",
+    "main": "bin/index.js",
+    "types": "bin/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "clean": "rm -rf bin",
+        "prepare": "npm run build"
+    },
+    "files": [
+        "bin",
+        "index.ts",
+        "package.json",
+        "PulumiPolicy.yaml",
+        "tsconfig.json"
+    ],
+    "dependencies": {
+        "@pulumi/aws": "^5.0.0",
+        "@pulumi/aws-compliance-policies": "^0",
+        "@pulumi/compliance-policy-manager": "^0",
+        "@pulumi/policy": "^1.10.0",
+        "@pulumi/pulumi": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "typescript": "^4.9.0"
+    }
+}

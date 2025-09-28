@@ -1,0 +1,15 @@
+{
+  "name": "pulumi-policy-wrapper",
+  "version": "1.0.0",
+  "description": "Wrapper to run Pulumi projects with policy checks",
+  "scripts": {
+    "preview": "node run-with-policy.js preview",
+    "preview:automation": "node run-with-policy-automation.js",
+    "up": "node run-with-policy.js up",
+    "destroy": "node run-with-policy.js destroy",
+    "refresh": "node run-with-policy.js refresh"
+  },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.113.0"
+  }
+}

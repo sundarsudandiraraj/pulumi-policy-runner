@@ -1,0 +1,2 @@
+runtime: nodejs
+description: Comprehensive AWS compliance policy pack enforcing ISO27001, CIS, and PCI DSS frameworks along with organization-specific security requirements.
