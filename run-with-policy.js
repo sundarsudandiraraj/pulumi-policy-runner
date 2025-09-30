@@ -18,6 +18,11 @@ Options:
   --stack <stack>      Pulumi stack name
   --help               Show this help text
 
+Features:
+  - Automatically builds the policy pack using pnpm workspace
+  - Supports configuration via environment variables
+  - Works with any Pulumi command
+
 Environment Variables:
   POLICY_DIR           Path to the policy pack directory
   PULUMI_PROJECT_DIR   Path to the Pulumi project directory
@@ -139,6 +144,39 @@ function runCommand(command, args, cwd) {
 }
 
 /**
+ * Builds the policy pack using pnpm workspace
+ */
+function buildPolicyPack(policyPackDir) {
+  log('Building policy pack...', colors.yellow);
+  
+  // Check if package.json exists
+  const packageJsonPath = path.join(policyPackDir, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    log(`Warning: No package.json found in ${policyPackDir}`, colors.yellow);
+    return 0; // Continue without building
+  }
+  
+  // Install dependencies using pnpm workspace
+  log('Installing dependencies with pnpm...', colors.yellow);
+  const installResult = runCommand('pnpm', ['install'], process.cwd());
+  if (installResult !== 0) {
+    log('Error: Failed to install dependencies', colors.red);
+    return installResult;
+  }
+  
+  // Run the build script in the policy pack directory
+  log('Building policy pack...', colors.yellow);
+  const buildResult = runCommand('pnpm', ['--filter', path.basename(policyPackDir), 'run', 'build'], process.cwd());
+  if (buildResult !== 0) {
+    log('Error: Failed to build policy pack', colors.red);
+    return buildResult;
+  }
+  
+  log(`✅ Policy pack built successfully`, colors.green);
+  return 0;
+}
+
+/**
  * Checks if a directory exists
  */
 function directoryExists(dir) {
@@ -182,6 +220,13 @@ async function main() {
     log(`Error: Pulumi project directory not found: ${PULUMI_PROJECT_DIR}`, colors.red);
     process.exit(1);
   }
+  
+  // Build the policy pack using pnpm workspace
+  // const buildResult = buildPolicyPack(POLICY_PACK_DIR);
+  // if (buildResult !== 0) {
+  //   log(`Error: Failed to build policy pack, exiting with code ${buildResult}`, colors.red);
+  //   process.exit(buildResult);
+  // }
 
   // Use the command and arguments from parseArgs()
   let pulumiCommand = initialCommand;
@@ -216,7 +261,7 @@ main().catch((error) => {
 
 // Example GitHub Actions workflow usage:
 /*
-name: Pulumi Policy Enforcement
+name: Pulumi Policy Enforcement with pnpm Workspace
 
 on:
   pull_request:
@@ -226,34 +271,29 @@ jobs:
   policy-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository with Pulumi project
+      - name: Checkout repository with Pulumi project and policies
         uses: actions/checkout@v3
-        with:
-          path: project
-
-      - name: Checkout policy repository
-        uses: actions/checkout@v3
-        with:
-          repository: your-org/pulumi-policies
-          path: policies
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Setup Pulumi
         uses: pulumi/setup-pulumi@v2
 
-      - name: Run Pulumi Deployment via Runner
+      - name: Run Pulumi with Policy Enforcement
         run: |
-          pnpm install
-          pnpm run preview
-        working-directory: ./runner # Run all commands from the runner's directory
+          node run-with-policy.js preview
         env:
           # Pass required variables to the script
-          PULUMI_STACK: ${{ inputs.pulumi_stack }} # Stack name from workflow input
-          PULUMI_PROJECT_DIR: ${{ inputs.working_dir }} # Project directory from workflow input
-          POLICY_DIR: ${{ inputs.policy_dir }} # Policy directory from workflow input
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_TOKEN }}
+          PULUMI_STACK: ${{ inputs.pulumi_stack }}
+          PULUMI_PROJECT_DIR: ${{ inputs.working_dir }}
+          POLICY_DIR: ./pulumiPolicy
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 */

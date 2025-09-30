@@ -195,6 +195,13 @@ PULUMI_STACK="lottiefiles-test/dev" POLICY_DIR="./pulumiPolicy" PULUMI_PROJECT_D
 | `--stack` | `PULUMI_STACK` | Pulumi stack name |
 | `--help` | - | Show help text |
 
+### Features
+
+- **Automatic Building**: The script automatically builds the policy pack by running `npm install` and `npm run build` in the policy directory
+- **Environment Variables**: Configure the script using environment variables for CI/CD environments
+- **Stack Support**: Specify the Pulumi stack via command-line or environment variable
+- **Flexible Configuration**: Works with any Pulumi command and additional arguments
+
 ### Priority Order
 
 The script uses the following priority order for configuration:

@@ -1,15 +1,22 @@
 {
-  "name": "pulumi-policy-wrapper",
+  "name": "pulumi-policy",
   "version": "1.0.0",
-  "description": "Wrapper to run Pulumi projects with policy checks",
+  "description": "Pulumi Policy Integration",
+  "main": "run-with-policy.js",
+  "private": true,
   "scripts": {
     "preview": "node run-with-policy.js preview",
-    "preview:automation": "node run-with-policy-automation.js",
     "up": "node run-with-policy.js up",
     "destroy": "node run-with-policy.js destroy",
-    "refresh": "node run-with-policy.js refresh"
+    "refresh": "node run-with-policy.js refresh",
+    "install-all": "pnpm install -r",
+    "build-policy": "cd pulumiPolicy && pnpm run build"
   },
   "dependencies": {
     "@pulumi/pulumi": "^3.113.0"
-  }
+  },
+  "workspaces": [
+    ".",
+    "pulumiPolicy"
+  ]
 }
