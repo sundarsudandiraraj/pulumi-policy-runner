@@ -22,6 +22,7 @@ Features:
   - Automatically builds the policy pack using pnpm workspace
   - Supports configuration via environment variables
   - Works with any Pulumi command
+  - Automatically adds --skip-preview when using 'up' command
 
 Environment Variables:
   POLICY_DIR           Path to the policy pack directory
@@ -38,7 +39,8 @@ Commands:
 
 Examples:
   node run-with-policy.js --policy-dir ./my-policies --project-dir ./my-project preview
-  node run-with-policy.js --project-dir ./infrastructure --stack dev up
+  node run-with-policy.js --project-dir ./infrastructure --stack dev up  # --skip-preview is added automatically
+  node run-with-policy.js --project-dir ./infrastructure up --yes  # combine with --yes for non-interactive updates
   POLICY_DIR=./policies PULUMI_PROJECT_DIR=./project PULUMI_STACK=dev node run-with-policy.js preview
 `);
   process.exit(0);
@@ -236,6 +238,12 @@ async function main() {
   if (PULUMI_STACK && !pulumiArgs.includes('--stack')) {
     log(`Adding stack parameter: ${PULUMI_STACK}`, colors.cyan);
     pulumiArgs.unshift('--stack', PULUMI_STACK);
+  }
+  
+  // Add --skip-preview flag when the command is 'up'
+  if (pulumiCommand === 'up' && !pulumiArgs.includes('--skip-preview')) {
+    log(`Adding --skip-preview flag for 'up' command`, colors.cyan);
+    pulumiArgs.push('--skip-preview');
   }
 
   // Add policy pack to the arguments
