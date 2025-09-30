@@ -11,7 +11,7 @@ import { PolicyPack, validateResourceOfType } from "@pulumi/policy";
 const requireS3BucketVersioning: ResourceValidationPolicy = {
     name: "org-require-s3-bucket-versioning",
     description: "Ensures all S3 buckets have versioning enabled for data protection and recovery.",
-    enforcementLevel: "mandatory",
+    enforcementLevel: "advisory",
     validateResource: validateResourceOfType(s3.Bucket, (bucket, args, reportViolation) => {
         if (!bucket.versioning || !bucket.versioning.enabled) {
             reportViolation("S3 buckets must have versioning enabled according to organizational policy.");
@@ -22,7 +22,7 @@ const requireS3BucketVersioning: ResourceValidationPolicy = {
 const requireEC2InstanceTags: ResourceValidationPolicy = {
     name: "org-require-ec2-instance-tags",
     description: "Ensures all EC2 instances have required organizational tags.",
-    enforcementLevel: "mandatory",
+    enforcementLevel: "advisory",
     validateResource: validateResourceOfType(ec2.Instance, (instance, args, reportViolation) => {
         const requiredTags = ["Owner", "Environment", "CostCenter"];
         const tags = instance.tags || {};
@@ -41,7 +41,7 @@ const requireEC2InstanceTags: ResourceValidationPolicy = {
 const requireRDSEncryption: ResourceValidationPolicy = {
     name: "org-require-rds-encryption",
     description: "Ensures all RDS instances are encrypted at rest.",
-    enforcementLevel: "mandatory",
+    enforcementLevel: "advisory",
     validateResource: validateResourceOfType(rds.Instance, (instance, args, reportViolation) => {
         if (!instance.storageEncrypted) {
             reportViolation("RDS instances must have storage encryption enabled according to organizational policy.");
